@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ln -s \"/c/Users/HK意境/.agents/skills/wechat-article-to-markdown\" \"$HOME/.claude/skills/wechat-article-to-markdown\")",
+      "Bash(ln -s \"/c/Users/HK意境/.agents/skills/juejin-article-to-markdown\" \"$HOME/.claude/skills/juejin-article-to-markdown\")",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(gh search:*)"
+    ]
+  }
+}
