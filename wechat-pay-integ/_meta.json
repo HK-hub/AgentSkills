@@ -1,0 +1,31 @@
+{
+  "name": "wechat-pay-integ",
+  "displayName": "微信/支付宝支付接入",
+  "version": "1.0.0",
+  "description": "帮开发者梳理微信支付、支付宝支付的接入流程、参数、回调、验签、退款和幂等处理。",
+  "author": "ikun",
+  "license": "MIT",
+  "category": "development",
+  "tags": [
+    "微信支付",
+    "支付宝",
+    "支付接入",
+    "回调"
+  ],
+  "keywords": [
+    "微信支付",
+    "支付宝支付",
+    "支付回调",
+    "退款",
+    "验签",
+    "幂等"
+  ],
+  "platforms": [
+    "openclaw",
+    "skillhub",
+    "claude-code",
+    "cursor"
+  ],
+  "language": "zh-CN",
+  "minAgentVersion": "0.1.0"
+}

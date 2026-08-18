@@ -1,0 +1,27 @@
+{
+  "name": "page-editor",
+  "version": "2.3.4",
+  "description": "Visual in-place editor CLI for vibe-coded HTML pages — outputs page-edits.json for agent application",
+  "main": "bin/page-editor.js",
+  "bin": {
+    "page-editor": "./bin/page-editor.js"
+  },
+  "scripts": {
+    "start": "node bin/page-editor.js",
+    "dev": "node bin/page-editor.js"
+  },
+  "keywords": [
+    "page-editor",
+    "visual-editor",
+    "cli",
+    "vibe-coding",
+    "agent-tool"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "express": "^4.19.2",
+    "http-proxy-middleware": "^3.0.3"
+  }
+}

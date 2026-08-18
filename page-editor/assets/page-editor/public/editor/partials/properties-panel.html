@@ -1,0 +1,629 @@
+<!-- =====================================================================
+     properties-panel.html — Pencil design-synced floating properties panel
+     Injected into buildShell() via _ppHtml variable in server/index.js
+     ===================================================================== -->
+
+<!-- ── Primary Properties Panel ─────────────────────────────────────── -->
+<div id="pp-panel" class="pp-panel" role="complementary" aria-label="属性面板">
+
+  <!-- Header: tag badge + element name + spacer + reset + close -->
+  <div class="pp-header">
+    <span id="pp-tag" class="pp-tag-badge">div</span>
+    <span id="pp-el-name" class="pp-el-name">.hero-title</span>
+    <button id="pp-delete-el" class="pp-header-icon pp-header-icon--danger" title="删除元素">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </button>
+    <span class="pp-header-spacer"></span>
+    <button id="pp-reset-el" class="pp-header-icon" title="恢复修改">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
+    <button id="pp-close" class="pp-header-icon" title="关闭">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+
+  <div class="pp-divider"></div>
+
+  <!-- Scrollable body — header stays fixed above -->
+  <div class="pp-body">
+
+  <!-- ── Section: 状态 (pseudo-state) — only shown when states detected ── -->
+  <div class="pp-section" id="pp-section-state" style="display:none">
+    <div class="pp-row pp-row--2col">
+      <div class="pp-inline-input pp-inline-input--select" title="元素交互状态">
+        <span class="pp-inline-label">状态</span>
+        <select id="pp-state-select" class="pp-inline-select">
+          <option value="">默认</option>
+        </select>
+        <svg class="pp-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="pp-divider" id="pp-divider-after-state" style="display:none"></div>
+
+  <!-- ── Section: 坐标 (X / Y) — smart show/hide ─────────────────── -->
+  <div class="pp-section" id="pp-section-coords" style="display:none">
+    <div class="pp-section-header">
+      <span class="pp-section-label">坐标</span>
+    </div>
+    <div class="pp-row pp-row--2col-btn">
+      <div class="pp-row__content">
+        <div class="pp-inline-input" title="水平位置 (left)">
+          <span class="pp-inline-label">X</span>
+          <input id="pp-x" class="pp-inline-val" type="text" placeholder="—">
+        </div>
+        <div class="pp-inline-input" title="垂直位置 (top)">
+          <span class="pp-inline-label">Y</span>
+          <input id="pp-y" class="pp-inline-val" type="text" placeholder="—">
+        </div>
+      </div>
+      <div class="pp-toggle-btn pp-toggle-btn--spacer" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="pp-divider" id="pp-divider-after-coords" style="display:none"></div>
+
+  <!-- ── Section: 顺序 (Order — flex/grid children only) ────────────── -->
+  <div class="pp-section" id="pp-section-order" style="display:none">
+    <div class="pp-section-header">
+      <span class="pp-section-label">顺序</span>
+      <span class="pp-order-help" id="pp-order-help" title="">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        <div class="pp-order-tooltip" id="pp-order-tooltip"></div>
+      </span>
+    </div>
+    <div class="pp-row pp-row--order">
+      <!-- Order number dropdown (layers icon inserted by JS) -->
+      <div id="pp-order-select-wrap" class="pp-order-select-wrap"></div>
+      <!-- Arrow buttons group (occupies col2) -->
+      <div class="pp-order-arrows">
+        <button id="pp-order-prev" class="pp-order-arrow-btn" title="前移" disabled>
+          <svg id="pp-order-prev-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </button>
+        <button id="pp-order-next" class="pp-order-arrow-btn" title="后移" disabled>
+          <svg id="pp-order-next-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pp-divider" id="pp-divider-after-order" style="display:none"></div>
+
+  <!-- ── Section: 布局 (unified: mode switcher + W/H + align/gap + padding + margin) ── -->
+  <div class="pp-section" id="pp-section-layout">
+    <div class="pp-section-header">
+      <span class="pp-section-label">布局</span>
+    </div>
+
+    <!-- Mode switcher row: [switcher] [wrap toggle] -->
+    <div class="pp-mode-row" id="pp-mode-row">
+      <div class="pp-mode-switcher" id="pp-mode-switcher">
+      <button class="pp-mode-btn" data-mode="block" title="普通布局">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6 6V7H4V6H6ZM7 5V4C7 3.44772 6.55228 3 6 3H4C3.44772 3 3 3.44772 3 4V5C3 5.55228 3.44772 6 4 6V7L3.7959 6.98926C2.85435 6.8938 2.1062 6.14565 2.01074 5.2041L2 5V4C2 2.89543 2.89543 2 4 2H6C7.10457 2 8 2.89543 8 4V5C8 6.03565 7.21278 6.887 6.2041 6.98926L6 7V6C6.55228 6 7 5.55228 7 5Z"/><path d="M13 9V10H11V9H13ZM14 8V7C14 6.44772 13.5523 6 13 6H11C10.4477 6 10 6.44772 10 7V8C10 8.55228 10.4477 9 11 9V10L10.7959 9.98926C9.85435 9.8938 9.1062 9.14565 9.01074 8.2041L9 8V7C9 5.89543 9.89543 5 11 5H13C14.1046 5 15 5.89543 15 7V8C15 9.03565 14.2128 9.887 13.2041 9.98926L13 10V9C13.5523 9 14 8.55228 14 8Z"/><path d="M7 13V14H5V13H7ZM8 12V11C8 10.4477 7.55228 10 7 10H5C4.44772 10 4 10.4477 4 11V12C4 12.5523 4.44772 13 5 13V14L4.7959 13.9893C3.85435 13.8938 3.1062 13.1457 3.01074 12.2041L3 12V11C3 9.89543 3.89543 9 5 9H7C8.10457 9 9 9.89543 9 11V12C9 13.0357 8.21278 13.887 7.2041 13.9893L7 14V13C7.55228 13 8 12.5523 8 12Z"/></svg>
+      </button>
+      <button class="pp-mode-btn" data-mode="column" title="纵向自动布局 (flex-direction: column)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6 6V7H5V6H6ZM7 5V4C7 3.44772 6.55228 3 6 3H5C4.44772 3 4 3.44772 4 4V5C4 5.55228 4.44772 6 5 6V7L4.7959 6.98926C3.85435 6.8938 3.1062 6.14565 3.01074 5.2041L3 5V4C3 2.89543 3.89543 2 5 2H6C7.10457 2 8 2.89543 8 4V5C8 6.03565 7.21278 6.887 6.2041 6.98926L6 7V6C6.55228 6 7 5.55228 7 5Z"/><path d="M6 13V14H5V13H6ZM7 12V11C7 10.4477 6.55228 10 6 10H5C4.44772 10 4 10.4477 4 11V12C4 12.5523 4.44772 13 5 13V14L4.7959 13.9893C3.85435 13.8938 3.1062 13.1457 3.01074 12.2041L3 12V11C3 9.89543 3.89543 9 5 9H6C7.10457 9 8 9.89543 8 11V12C8 13.0357 7.21278 13.887 6.2041 13.9893L6 14V13C6.55228 13 7 12.5523 7 12Z"/><path d="M13.8635 11.0863C14.0455 11.2737 14.0455 11.5776 13.8635 11.765L11.8296 13.8594C11.6475 14.0469 11.3525 14.0469 11.1704 13.8594L9.13653 11.765C8.95449 11.5776 8.95449 11.2737 9.13653 11.0863C9.31857 10.8988 9.61364 10.8988 9.79568 11.0863L11.0339 12.3613V2L11.9661 2L11.9661 12.3613L13.2043 11.0863C13.3864 10.8988 13.6814 10.8988 13.8635 11.0863Z"/></svg>
+      </button>
+      <button class="pp-mode-btn" data-mode="row" title="横向自动布局 (flex-direction: row)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5 7V8H4V7H5ZM6 6V5C6 4.44772 5.55228 4 5 4H4C3.44772 4 3 4.44772 3 5V6C3 6.55228 3.44772 7 4 7V8L3.7959 7.98926C2.85435 7.8938 2.1062 7.14565 2.01074 6.2041L2 6V5C2 3.89543 2.89543 3 4 3H5C6.10457 3 7 3.89543 7 5V6C7 7.03565 6.21278 7.887 5.2041 7.98926L5 8V7C5.55228 7 6 6.55228 6 6Z"/><path d="M12 7V8H11V7H12ZM13 6V5C13 4.44772 12.5523 4 12 4H11C10.4477 4 10 4.44772 10 5V6C10 6.55228 10.4477 7 11 7V8L10.7959 7.98926C9.85435 7.8938 9.1062 7.14565 9.01074 6.2041L9 6V5C9 3.89543 9.89543 3 11 3H12C13.1046 3 14 3.89543 14 5V6C14 7.03565 13.2128 7.887 12.2041 7.98926L12 8V7C12.5523 7 13 6.55228 13 6Z"/><path d="M11.0863 9.13653C11.2737 8.95449 11.5776 8.95449 11.765 9.13653L13.8594 11.1704C14.0469 11.3525 14.0469 11.6475 13.8594 11.8296L11.765 13.8635C11.5776 14.0455 11.2737 14.0455 11.0863 13.8635C10.8988 13.6814 10.8988 13.3864 11.0863 13.2043L12.3613 11.9661H2V11.0339H12.3613L11.0863 9.79568C10.8988 9.61364 10.8988 9.31857 11.0863 9.13653Z"/></svg>
+      </button>
+      <button class="pp-mode-btn" data-mode="grid" title="网格布局 (display: grid)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 12V13H4V12H6ZM13 12V13H11V12H13ZM14 11V10C14 9.44772 13.5523 9 13 9H11C10.4477 9 10 9.44772 10 10V11C10 11.5523 10.4477 12 11 12V13C9.89543 13 9 12.1046 9 11V10C9 8.89543 9.89543 8 11 8H13C14.1046 8 15 8.89543 15 10V11C15 12.1046 14.1046 13 13 13V12C13.5523 12 14 11.5523 14 11ZM7 11V10C7 9.44772 6.55228 9 6 9H4C3.44772 9 3 9.44772 3 10V11C3 11.5523 3.44772 12 4 12V13L3.7959 12.9893C2.78722 12.887 2 12.0357 2 11V10C2 8.89543 2.89543 8 4 8H6C7.10457 8 8 8.89543 8 10V11C8 12.1046 7.10457 13 6 13V12C6.55228 12 7 11.5523 7 11ZM6 6V7H4V6H6ZM13 6V7H11V6H13ZM14 5V4C14 3.44772 13.5523 3 13 3H11C10.4477 3 10 3.44772 10 4V5C10 5.55228 10.4477 6 11 6V7C9.89543 7 9 6.10457 9 5V4C9 2.89543 9.89543 2 11 2H13C14.1046 2 15 2.89543 15 4V5C15 6.10457 14.1046 7 13 7V6C13.5523 6 14 5.55228 14 5ZM7 5V4C7 3.44772 6.55228 3 6 3H4C3.44772 3 3 3.44772 3 4V5C3 5.55228 3.44772 6 4 6V7L3.7959 6.98926C2.78722 6.887 2 6.03565 2 5V4C2 2.89543 2.89543 2 4 2H6C7.10457 2 8 2.89543 8 4V5C8 6.10457 7.10457 7 6 7V6C6.55228 6 7 5.55228 7 5Z" fill="currentColor"/></svg>
+      </button>
+      </div>
+      <button id="pp-wrap-toggle" class="pp-wrap-btn" title="flex-wrap: wrap (换行)" style="visibility:hidden">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h15a3 3 0 1 1 0 6h-4"/><polyline points="13 16 11 18 13 20"/></svg>
+      </button>
+    </div>
+
+    <!-- W/H row with Fill/Hug + aspect ratio lock in btn-col -->
+    <div class="pp-row pp-row--wh">
+      <div class="pp-row__content">
+        <div class="pp-inline-input pp-inline-input--wh" title="宽度">
+          <span class="pp-inline-label">W</span>
+          <input id="pp-w" class="pp-inline-val" type="text" placeholder="auto">
+          <span class="pp-wh-mode" id="pp-w-mode-label" data-prop="width">Fill</span>
+          <select id="pp-w-mode" class="pp-wh-mode-select" title="宽度模式">
+            <option value="fixed">fixed</option>
+            <option value="hug">Hug</option>
+            <option value="fill">Fill</option>
+          </select>
+        </div>
+        <div class="pp-inline-input pp-inline-input--wh" title="高度">
+          <span class="pp-inline-label">H</span>
+          <input id="pp-h" class="pp-inline-val" type="text" placeholder="auto">
+          <span class="pp-wh-mode" id="pp-h-mode-label" data-prop="height">Hug</span>
+          <select id="pp-h-mode" class="pp-wh-mode-select" title="高度模式">
+            <option value="fixed">fixed</option>
+            <option value="hug">Hug</option>
+            <option value="fill">Fill</option>
+          </select>
+        </div>
+      </div>
+      <button id="pp-aspect-lock" class="pp-toggle-btn" title="等比例调整">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 9 6-6"/><path d="M21 3h-6"/><path d="M21 3v6"/><path d="m9 15-6 6"/><path d="M3 21h6"/><path d="M3 21v-6"/></svg>
+      </button>
+    </div>
+
+    <!-- 9-grid alignment + gap (flex/grid only) -->
+    <div class="pp-flex-only" id="pp-flex-controls" style="display:none">
+      <div class="pp-row pp-row--align-gap">
+        <div class="pp-align9-grid" id="pp-align9-grid" title="对齐方式">
+          <div class="pp-align9-row">
+            <button class="pp-align9-cell" data-jc="flex-start" data-ai="flex-start"><span class="pp-dot"></span><svg class="pp-align9-icon pp-icon-packed" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="pp-align9-icon pp-icon-dist" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button class="pp-align9-cell" data-jc="center" data-ai="flex-start"><span class="pp-dot"></span><svg class="pp-align9-icon pp-icon-packed" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="pp-align9-icon pp-icon-dist" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button class="pp-align9-cell" data-jc="flex-end" data-ai="flex-start"><span class="pp-dot"></span><svg class="pp-align9-icon pp-icon-packed" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="pp-align9-icon pp-icon-dist" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          </div>
+          <div class="pp-align9-row">
+            <button class="pp-align9-cell" data-jc="flex-start" data-ai="center"><span class="pp-dot"></span><svg class="pp-align9-icon pp-icon-packed" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="pp-align9-icon pp-icon-dist" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button class="pp-align9-cell" data-jc="center" data-ai="center"><span class="pp-dot"></span><svg class="pp-align9-icon pp-icon-packed" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="pp-align9-icon pp-icon-dist" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button class="pp-align9-cell" data-jc="flex-end" data-ai="center"><span class="pp-dot"></span><svg class="pp-align9-icon pp-icon-packed" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="pp-align9-icon pp-icon-dist" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          </div>
+          <div class="pp-align9-row">
+            <button class="pp-align9-cell" data-jc="flex-start" data-ai="flex-end"><span class="pp-dot"></span><svg class="pp-align9-icon pp-icon-packed" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="pp-align9-icon pp-icon-dist" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button class="pp-align9-cell" data-jc="center" data-ai="flex-end"><span class="pp-dot"></span><svg class="pp-align9-icon pp-icon-packed" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="pp-align9-icon pp-icon-dist" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button class="pp-align9-cell" data-jc="flex-end" data-ai="flex-end"><span class="pp-dot"></span><svg class="pp-align9-icon pp-icon-packed" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg><svg class="pp-align9-icon pp-icon-dist" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          </div>
+        </div>
+        <div class="pp-gap-col">
+          <div id="pp-jc-dropdown-wrap" style="display:none"></div>
+          <div class="pp-inline-input pp-inline-input--gap" title="gap (间距)">
+            <svg class="pp-inline-icon" id="pp-gap-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="14" height="6" x="5" y="15" rx="2"/><rect width="10" height="6" x="7" y="3" rx="2"/><path d="M2 21h20"/><path d="M2 3h20"/>
+            </svg>
+            <input id="pp-gap" class="pp-inline-val" type="text" placeholder="0">
+          </div>
+        </div>
+      </div>
+      <!-- Grid-specific controls (visible only in grid mode) -->
+      <div class="pp-grid-controls" id="pp-grid-controls" style="display:none">
+        <div class="pp-row pp-row--2col">
+          <div class="pp-row__content">
+            <div class="pp-inline-input" title="grid-template-columns">
+              <span class="pp-inline-label">列</span>
+              <input id="pp-grid-cols" class="pp-inline-val" type="text" placeholder="1fr 1fr">
+            </div>
+            <div class="pp-inline-input" title="grid-template-rows">
+              <span class="pp-inline-label">行</span>
+              <input id="pp-grid-rows" class="pp-inline-val" type="text" placeholder="auto">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 内边距 -->
+    <div class="pp-section-header pp-section-header--sub">
+      <span class="pp-section-label">内边距</span>
+    </div>
+    <!-- 2-value mode (horizontal + vertical) -->
+    <div id="pp-padding-2val" class="pp-row pp-row--2col-btn">
+      <div class="pp-row__content">
+        <div class="pp-inline-input" title="水平内边距 (padding-left/right)">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="6" height="10" x="9" y="7" rx="2"/><path d="M4 22V2"/><path d="M20 22V2"/></svg>
+          <input id="pp-pad-h" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input" title="垂直内边距 (padding-top/bottom)">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="10" height="6" x="7" y="9" rx="2"/><path d="M22 20H2"/><path d="M22 4H2"/></svg>
+          <input id="pp-pad-v" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+      </div>
+      <button id="pp-padding-expand" class="pp-toggle-btn" title="四边独立设置">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>
+      </button>
+    </div>
+    <!-- 4-value mode (hidden by default) -->
+    <div id="pp-padding-4val" class="pp-row pp-row--4col-btn" style="display:none">
+      <div class="pp-row__content">
+        <div class="pp-inline-input" title="padding-left">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M3 11L2 11L2 1L3 1L3 11Z"/><path d="M7 4L8 4L8 8L7 8L7 4ZM5 4L5 8L8 8C8 8.55228 7.55228 9 7 9L5 9C4.44772 9 4 8.55228 4 8L4 4L4.00488 3.89746C4.05621 3.39333 4.48232 3 5 3L7 3L7.10254 3.00488C7.57297 3.05278 7.94722 3.42703 7.99512 3.89746L8 4L5 4Z"/></svg>
+          <input id="pp-pl" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input" title="padding-top">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M1 3V2H11V3H1Z"/><path d="M8 7V8H4V7H8ZM8 5H4V8C3.44772 8 3 7.55228 3 7V5C3 4.44772 3.44772 4 4 4H8L8.10254 4.00488C8.60667 4.05621 9 4.48232 9 5V7L8.99512 7.10254C8.94722 7.57297 8.57297 7.94722 8.10254 7.99512L8 8V5Z"/></svg>
+          <input id="pp-pt" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input" title="padding-right">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M10 11L9 11L9 1L10 1L10 11Z"/><path d="M7 4L8 4L8 8L7 8L7 4ZM5 4L5 8L8 8C8 8.55228 7.55228 9 7 9L5 9C4.44772 9 4 8.55228 4 8L4 4L4.00488 3.89746C4.05621 3.39333 4.48232 3 5 3L7 3L7.10254 3.00488C7.57297 3.05278 7.94722 3.42703 7.99512 3.89746L8 4L5 4Z"/></svg>
+          <input id="pp-pr" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input" title="padding-bottom">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M1 10V9H11V10H1Z"/><path d="M8 7V8H4V7H8ZM8 5H4V8C3.44772 8 3 7.55228 3 7V5C3 4.44772 3.44772 4 4 4H8L8.10254 4.00488C8.60667 4.05621 9 4.48232 9 5V7L8.99512 7.10254C8.94722 7.57297 8.57297 7.94722 8.10254 7.99512L8 8V5Z"/></svg>
+          <input id="pp-pb" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+      </div>
+      <button id="pp-padding-collapse" class="pp-toggle-btn pp-toggle-btn--active" title="合并为两值">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>
+      </button>
+    </div>
+
+    <!-- 外边距 -->
+    <div class="pp-section-header pp-section-header--sub">
+      <span class="pp-section-label">外边距</span>
+      <span class="pp-section-spacer"></span>
+    </div>
+    <!-- 2-value mode (horizontal + vertical) -->
+    <div id="pp-margin-2val" class="pp-row pp-row--2col-btn">
+      <div class="pp-row__content">
+        <div class="pp-inline-input" title="水平外边距 (margin-left/right)">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="m16 16 4-4-4-4"/><path d="m8 8-4 4 4 4"/></svg>
+          <input id="pp-margin-h" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input" title="垂直外边距 (margin-top/bottom)">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16-4 4-4-4"/><path d="M3 12h18"/><path d="m8 8 4-4 4 4"/></svg>
+          <input id="pp-margin-v" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+      </div>
+      <button id="pp-margin-expand" class="pp-toggle-btn" title="四边独立设置">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>
+      </button>
+    </div>
+    <!-- 4-value mode (hidden by default) -->
+    <div id="pp-margin-4val" class="pp-row pp-row--4col-btn" style="display:none">
+      <div class="pp-row__content">
+        <div class="pp-inline-input" title="margin-left">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 9a1 1 0 0 1-1-1V4.707a.707.707 0 0 0-1.207-.5l-6.94 6.94a1.207 1.207 0 0 0 0 1.707l6.94 6.94a.707.707 0 0 0 1.207-.5V16a1 1 0 0 1 1-1h2a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z"/><path d="M20 9v6"/></svg>
+          <input id="pp-ml" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input" title="margin-top">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1h3.293a.707.707 0 0 0 .5-1.207l-6.939-6.939a1.207 1.207 0 0 0-1.708 0l-6.94 6.94a.707.707 0 0 0 .5 1.206H8a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1z"/><path d="M9 20h6"/></svg>
+          <input id="pp-mt" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input" title="margin-right">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 9a1 1 0 0 0 1-1V4.707a.707.707 0 0 1 1.207-.5l6.94 6.94a1.207 1.207 0 0 1 0 1.707l-6.94 6.94a.707.707 0 0 1-1.207-.5V16a1 1 0 0 0-1-1H9a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1z"/><path d="M4 9v6"/></svg>
+          <input id="pp-mr" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input" title="margin-bottom">
+          <svg class="pp-inline-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1h3.293a.707.707 0 0 1 .5 1.207l-6.939 6.939a1.207 1.207 0 0 1-1.708 0l-6.94-6.94a.707.707 0 0 1 .5-1.206H8a1 1 0 0 0 1-1V9a1 1 0 0 1 1-1z"/><path d="M9 4h6"/></svg>
+          <input id="pp-mb" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+      </div>
+      <button id="pp-margin-collapse" class="pp-toggle-btn pp-toggle-btn--active" title="合并为两值">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="pp-divider"></div>
+
+  <!-- ── Section: 属性 (透明度 + 圆角) ──────────────────────────────── -->
+  <div class="pp-section" id="pp-section-attrs">
+    <div class="pp-section-header">
+      <span class="pp-section-label">属性</span>
+    </div>
+    <div class="pp-row pp-row--attrs">
+      <div class="pp-row__content">
+        <!-- Opacity -->
+        <div class="pp-inline-input" title="opacity">
+          <span class="pp-inline-label">透明度</span>
+          <input id="pp-opacity" class="pp-inline-val" type="number" step="0.01" min="0" max="1" placeholder="1">
+        </div>
+        <!-- Radius -->
+        <div class="pp-inline-input" title="border-radius">
+          <span class="pp-inline-label">圆角</span>
+          <input id="pp-radius" class="pp-inline-val" type="text" placeholder="0px">
+        </div>
+      </div>
+      <!-- Toggle in btn-col -->
+      <button id="pp-radius-toggle" class="pp-toggle-btn" title="四角独立设置">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5V2.5A1.5 1.5 0 0 1 2.5 1H5"/><path d="M11 1h2.5A1.5 1.5 0 0 1 15 2.5V5"/><path d="M15 11v2.5a1.5 1.5 0 0 1-1.5 1.5H11"/><path d="M5 15H2.5A1.5 1.5 0 0 1 1 13.5V11"/></svg>
+      </button>
+    </div>
+    <!-- Radius individual (hidden by default) -->
+    <div id="pp-radius-individual" class="pp-row pp-row--4col" style="display:none">
+      <div class="pp-row__content">
+        <div class="pp-inline-input pp-inline-input--corner" title="border-top-left-radius">
+          <svg class="pp-corner-icon pp-corner-icon--tl" width="12" height="12" viewBox="0 0 12 12"><path d="M4 6C4 4.61929 5.11929 3.5 6.5 3.5H9.5V2.5H6.5C4.567 2.5 3 4.067 3 6V9H4V6Z" fill="currentColor"/></svg>
+          <input id="pp-radius-tl" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input pp-inline-input--corner" title="border-top-right-radius">
+          <svg class="pp-corner-icon pp-corner-icon--tr" width="12" height="12" viewBox="0 0 12 12"><path d="M8.5 6C8.5 4.61929 7.38071 3.5 6 3.5H3V2.5H6C7.933 2.5 9.5 4.067 9.5 6V9H8.5V6Z" fill="currentColor"/></svg>
+          <input id="pp-radius-tr" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input pp-inline-input--corner" title="border-bottom-left-radius">
+          <svg class="pp-corner-icon pp-corner-icon--bl" width="12" height="12" viewBox="0 0 12 12"><path d="M4 5.5C4 6.88071 5.11929 8 6.5 8H9.5V9H6.5C4.567 9 3 7.433 3 5.5V2.5H4V5.5Z" fill="currentColor"/></svg>
+          <input id="pp-radius-bl" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+        <div class="pp-inline-input pp-inline-input--corner" title="border-bottom-right-radius">
+          <svg class="pp-corner-icon pp-corner-icon--br" width="12" height="12" viewBox="0 0 12 12"><path d="M8.5 5.5C8.5 6.88071 7.38071 8 6 8H3V9H6C7.933 9 9.5 7.433 9.5 5.5V2.5H8.5V5.5Z" fill="currentColor"/></svg>
+          <input id="pp-radius-br" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pp-divider"></div>
+
+  <!-- ── Section: Image (img / bg-image elements only) ─────────────── -->
+  <div class="pp-section" id="pp-section-image" style="display:none">
+    <div class="pp-section-header">
+      <span class="pp-section-label">图片</span>
+      <span class="pp-section-spacer"></span>
+      <button id="pp-image-add" class="pp-section-action" title="添加背景图">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      </button>
+    </div>
+    <input id="pp-image-file" type="file" accept="image/*" style="display:none">
+    <div class="pp-color-rows" id="pp-image-rows"></div>
+  </div>
+
+  <div class="pp-divider"></div>
+
+  <!-- ── Section: Typography (text elements only) ──────────────────── -->
+  <div class="pp-section" id="pp-section-typo" style="display:none">
+    <div class="pp-section-header">
+      <span class="pp-section-label">文字</span>
+    </div>
+
+    <!-- Font family (full width dropdown — spans col1+col2) -->
+    <div class="pp-row pp-row--full">
+      <div class="pp-row__content">
+        <div class="pp-inline-input pp-inline-input--full pp-inline-input--select" title="字体">
+          <select id="pp-font-family" class="pp-inline-select">
+          <option value="inherit">继承</option>
+          <option value="Inter, sans-serif">Inter</option>
+          <option value="'PingFang SC', sans-serif">PingFang SC</option>
+          <option value="'Helvetica Neue', sans-serif">Helvetica Neue</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Courier New', monospace">Courier New</option>
+        </select>
+        <svg class="pp-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Font weight + size -->
+    <div class="pp-row pp-row--2col pp-row--2col-nobn">
+      <div class="pp-row__content">
+        <div class="pp-inline-input pp-inline-input--select" title="字重">
+        <span class="pp-inline-label">字重</span>
+        <select id="pp-font-weight" class="pp-inline-select pp-inline-select--val">
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="300">300</option>
+          <option value="400" selected>400</option>
+          <option value="500">500</option>
+          <option value="600">600</option>
+          <option value="700">700</option>
+          <option value="800">800</option>
+          <option value="900">900</option>
+        </select>
+        <svg class="pp-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="pp-inline-input pp-inline-input--fontsize" title="字号">
+        <span class="pp-inline-label">字号</span>
+        <input id="pp-font-size" class="pp-inline-val" type="text" placeholder="—" autocomplete="off">
+        <button class="pp-fontsize-trigger" type="button" aria-label="选择字号">
+          <svg class="pp-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+      </div>
+    </div>
+
+    <!-- Line height + letter spacing -->
+    <div class="pp-row pp-row--2col pp-row--2col-nobn">
+      <div class="pp-row__content">
+        <div class="pp-inline-input" title="行高 (line-height)">
+          <span class="pp-inline-label">行高</span>
+          <input id="pp-line-height" class="pp-inline-val" type="text" placeholder="Auto">
+        </div>
+        <div class="pp-inline-input" title="字间距 (letter-spacing)">
+          <span class="pp-inline-label">字距</span>
+          <input id="pp-letter-spacing" class="pp-inline-val" type="text" placeholder="0">
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorations (U/S/I) + Align buttons — full width, no btn-col -->
+    <div class="pp-row pp-row--deco-align">
+      <div class="pp-deco-group">
+          <button class="pp-deco-btn" data-deco="underline" title="下划线">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg>
+          </button>
+          <button class="pp-deco-btn" data-deco="line-through" title="删除线">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/></svg>
+          </button>
+          <button class="pp-deco-btn" data-deco="italic" title="斜体">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg>
+          </button>
+        </div>
+        <div class="pp-align-group">
+          <button class="pp-align-btn" data-align="left" title="左对齐">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H3"/><path d="M15 12H3"/><path d="M17 19H3"/></svg>
+          </button>
+          <button class="pp-align-btn" data-align="center" title="居中">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H3"/><path d="M17 12H7"/><path d="M19 19H5"/></svg>
+          </button>
+          <button class="pp-align-btn" data-align="right" title="右对齐">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H3"/><path d="M21 12H9"/><path d="M21 19H7"/></svg>
+          </button>
+          <button class="pp-align-btn" data-align="justify" title="两端对齐">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18"/><path d="M3 12h18"/><path d="M3 19h18"/></svg>
+          </button>
+        </div>
+    </div>
+
+    <!-- Text color row (pill style — full width, same structure as fill/stroke) -->
+    <div id="pp-text-color-rows" class="pp-color-rows"></div>
+  </div>
+
+  <div class="pp-divider" id="pp-divider-after-typo"></div>
+
+  <!-- ── Section: Fill ─────────────────────────────────────────────── -->
+  <div class="pp-section">
+    <div class="pp-section-header">
+      <span class="pp-section-label">填充</span>
+      <span class="pp-section-spacer"></span>
+      <button id="pp-fill-add" class="pp-section-action" title="添加填充">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      </button>
+    </div>
+    <div id="pp-fill-rows" class="pp-color-rows"></div>
+  </div>
+
+  <div class="pp-divider"></div>
+
+  <!-- ── Section: Stroke ─────────────────────────────────────────── -->
+  <div class="pp-section">
+    <div class="pp-section-header">
+      <span class="pp-section-label">描边</span>
+      <span class="pp-section-spacer"></span>
+      <button id="pp-stroke-add" class="pp-section-action" title="添加描边">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      </button>
+    </div>
+    <div id="pp-stroke-rows" class="pp-color-rows"></div>
+  </div>
+
+  <div class="pp-divider"></div>
+
+  <!-- ── Section: Shadow ─────────────────────────────────────────── -->
+  <div class="pp-section">
+    <div class="pp-section-header">
+      <span class="pp-section-label">阴影</span>
+      <span class="pp-section-spacer"></span>
+      <button id="pp-shadow-add" class="pp-section-action" title="添加阴影">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      </button>
+    </div>
+    <div id="pp-shadow-rows" class="pp-color-rows"></div>
+  </div>
+
+  </div><!-- /.pp-body -->
+
+</div><!-- /#pp-panel -->
+
+
+<!-- ── Stroke Flyout Sub-Panel ───────────────────────────────────────── -->
+<div id="pp-stroke-flyout" class="pp-flyout" role="dialog" aria-label="描边详情">
+  <div class="pp-flyout-header">
+    <span>描边</span>
+    <button class="pp-flyout-close" title="关闭">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Color row (reuses pp-prop-row component) -->
+  <div class="pp-flyout-section">
+    <div id="ppsf-color-row-wrap"></div>
+  </div>
+
+  <!-- Type + Thickness -->
+  <div class="pp-flyout-section">
+    <div class="pp-flyout-pair">
+      <div id="ppsf-position-wrap" style="flex:1"></div>
+      <div class="pp-inline-input" style="flex:1">
+        <span class="pp-inline-label">粗细</span>
+        <input id="ppsf-width" class="pp-inline-val" type="text" placeholder="1">
+      </div>
+    </div>
+  </div>
+
+  <!-- Style buttons -->
+  <div class="pp-flyout-section">
+    <div class="pp-flyout-btn-row">
+      <button class="pp-stroke-style-btn pp-stroke-style-btn--active" data-style="solid"  title="实线">———</button>
+      <button class="pp-stroke-style-btn" data-style="dashed" title="虚线">- - - -</button>
+      <button class="pp-stroke-style-btn" data-style="dotted" title="点线">··········</button>
+    </div>
+  </div>
+
+  <!-- Side buttons -->
+  <div class="pp-flyout-section">
+    <div class="pp-flyout-btn-row">
+      <button class="pp-side-btn pp-side-btn--active" data-side="all" title="全部">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><rect width="8" height="8" x="8" y="8" rx="1"/></svg>
+      </button>
+      <button class="pp-side-btn" data-side="left" title="左边">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+      </button>
+      <button class="pp-side-btn" data-side="right" title="右边">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg>
+      </button>
+      <button class="pp-side-btn" data-side="top" title="上边">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/></svg>
+      </button>
+      <button class="pp-side-btn" data-side="bottom" title="下边">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 15h18"/></svg>
+      </button>
+    </div>
+  </div>
+</div><!-- /#pp-stroke-flyout -->
+
+
+<!-- ── Shadow Flyout Sub-Panel ────────────────────────────────────────── -->
+<div id="pp-shadow-flyout" class="pp-flyout" role="dialog" aria-label="阴影详情">
+  <div class="pp-flyout-header">
+    <span>阴影</span>
+    <button class="pp-flyout-close" title="关闭">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Type select -->
+  <div class="pp-flyout-section">
+    <div id="ppshf-type-wrap"></div>
+  </div>
+
+  <!-- Color row -->
+  <div class="pp-flyout-section">
+    <div id="ppshf-color-row-wrap"></div>
+  </div>
+
+  <!-- X / Y -->
+  <div class="pp-flyout-section">
+    <div class="pp-flyout-pair">
+      <div class="pp-inline-input" style="flex:1">
+        <span class="pp-inline-label">X</span>
+        <input id="ppshf-x" class="pp-inline-val" type="text" placeholder="0">
+      </div>
+      <div class="pp-inline-input" style="flex:1">
+        <span class="pp-inline-label">Y</span>
+        <input id="ppshf-y" class="pp-inline-val" type="text" placeholder="4">
+      </div>
+    </div>
+  </div>
+
+  <!-- Blur / Spread -->
+  <div class="pp-flyout-section">
+    <div class="pp-flyout-pair">
+      <div class="pp-inline-input" style="flex:1">
+        <span class="pp-inline-label">模糊</span>
+        <input id="ppshf-blur" class="pp-inline-val" type="text" min="0" placeholder="8">
+      </div>
+      <div class="pp-inline-input" style="flex:1">
+        <span class="pp-inline-label">扩散</span>
+        <input id="ppshf-spread" class="pp-inline-val" type="text" placeholder="0">
+      </div>
+    </div>
+  </div>
+</div><!-- /#pp-shadow-flyout -->
+
+
+<!-- ── Align Toolbar (multi-select) ─────────────────────────────────── -->
+<div id="align-toolbar" role="toolbar" aria-label="对齐工具">
+  <button class="align-btn" data-align="left"    title="左对齐">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="3" width="2" height="10" rx="1"/><rect x="5" y="4" width="6" height="3" rx="1"/><rect x="5" y="9" width="9" height="3" rx="1"/></svg>
+  </button>
+  <button class="align-btn" data-align="centerH" title="水平居中">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="7" y="2" width="2" height="12" rx="1"/><rect x="4" y="4" width="8" height="3" rx="1"/><rect x="3" y="9" width="10" height="3" rx="1"/></svg>
+  </button>
+  <button class="align-btn" data-align="right"   title="右对齐">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="12" y="3" width="2" height="10" rx="1"/><rect x="5" y="4" width="6" height="3" rx="1"/><rect x="2" y="9" width="9" height="3" rx="1"/></svg>
+  </button>
+  <div class="align-sep"></div>
+  <button class="align-btn" data-align="top"     title="上对齐">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="2" width="10" height="2" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="9" y="5" width="3" height="9" rx="1"/></svg>
+  </button>
+  <button class="align-btn" data-align="centerV" title="垂直居中">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="7" width="12" height="2" rx="1"/><rect x="4" y="4" width="3" height="8" rx="1"/><rect x="9" y="3" width="3" height="10" rx="1"/></svg>
+  </button>
+  <button class="align-btn" data-align="bottom"  title="下对齐">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="12" width="10" height="2" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="9" y="2" width="3" height="9" rx="1"/></svg>
+  </button>
+  <div class="align-sep"></div>
+  <button class="align-btn" data-align="distributeH" title="水平等间距">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="3" width="2" height="10" rx="1"/><rect x="13" y="3" width="2" height="10" rx="1"/><rect x="6" y="5" width="4" height="6" rx="1"/></svg>
+  </button>
+</div><!-- /#align-toolbar -->
